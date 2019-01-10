@@ -42,6 +42,8 @@ public class Ship : MonoBehaviour
 
   public float throttleMinAngle = -25.0f;
   public float throttleMaxAngle = 20.0f;
+
+  public float RotationModifier = 0.2f;
   
   void Start() 
   {
@@ -72,7 +74,7 @@ public class Ship : MonoBehaviour
   {
     var target = Quaternion.Euler(0, shipInput.Steering, 0);
     // Dampen towards the target rotation
-    transform.rotation = Quaternion.Slerp(transform.rotation, target, 1.0f);
+    transform.rotation = Quaternion.Slerp(transform.rotation, target, RotationModifier);
     transform.position = new Vector3(transform.position.x, 0.0f, transform.position.z);
     transform.Translate(transform.forward * shipInput.Throttle, Space.World);
   }

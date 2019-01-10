@@ -90,7 +90,7 @@ public class Targets : MonoBehaviour
 
   private Vector2 GetOffset(int x, int z)
   {
-    return new Vector2(-(x * 10), -(z* 10)); 
+    return new Vector2(-(x * 12), -(z* 12)); 
   }
 
   private float GetTargetSpeed()

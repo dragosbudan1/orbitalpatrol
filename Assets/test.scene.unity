@@ -108,7 +108,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &520127211
 Transform:
   m_ObjectHideFlags: 0
@@ -252,7 +252,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 870239113}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -36.09, y: 5.4, z: 100}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -275,6 +275,7 @@ MonoBehaviour:
   bulletDelay: 0.1
   throttleMinAngle: -25
   throttleMaxAngle: 20
+  RotationModifier: 0.1
 --- !u!54 &870239119
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -990,7 +991,7 @@ GameObject:
   - component: {fileID: 2052359292}
   - component: {fileID: 2052359291}
   - component: {fileID: 2052359289}
-  - component: {fileID: 2052359293}
+  - component: {fileID: 2052359290}
   m_Layer: 0
   m_Name: GameArea
   m_TagString: Untagged
@@ -1030,6 +1031,18 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &2052359290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2052359288}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0f691fd75961404f91a53eb56e02d0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Framerate: 60
 --- !u!33 &2052359291
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1054,14 +1067,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2052359293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2052359288}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa1e0ad3b6b654d2a998287ae1c06d2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

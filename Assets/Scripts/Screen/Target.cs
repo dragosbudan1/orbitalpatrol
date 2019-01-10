@@ -17,7 +17,8 @@ public enum TargetState
 {
   Start = 0,
   Stop = 1,
-  Exit = 2
+  Exit = 2,
+  Die = 3
 }
 
 public class Target : MonoBehaviour
@@ -84,10 +85,13 @@ public class Target : MonoBehaviour
   {
     readyToDie = true;
     
-    var rb = gameObject.AddComponent<Rigidbody>() as Rigidbody;
-    if(rb != null)
+    if(gameObject.GetComponent<Rigidbody>() as Rigidbody != null)
     {
-      rb.useGravity = false;  
+      var rb = gameObject.AddComponent<Rigidbody>() as Rigidbody;
+      if(rb != null)
+      {
+        rb.useGravity = false;  
+      }    
     }    
   }
 
