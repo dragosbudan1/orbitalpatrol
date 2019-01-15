@@ -9,12 +9,23 @@ public enum ShooterState {
   Shoot,
   Die
 }
+
+public class ShooterInput
+{
+  public float Speed { get; set; }
+  public Vector3 StartPosition { get; set; }
+  public Vector3 StopPosition { get; set; }
+  public Vector3 ExitDirection { get; set;}
+  public int TimeStopped { get; set; }
+  public Vector2 Offset {get; set;}
+}
+
 public class Shooter : MonoBehaviour
 {
-  public float health { get; set; } = 50.0f;
+  public float health = 50.0f;
   private bool readyToDie = false;
-  private TargetInput targetInput = new TargetInput();
-  private TargetState state = ShooterState.Start;
+  private ShooterInput shooterInput = new ShooterInput();
+  private ShooterState state = ShooterState.Start;
   private int secondsStopped = 0;
   private Vector3 startPosition = new Vector3();
   private Vector3 stopPosition = new Vector3();
@@ -44,11 +55,7 @@ public class Shooter : MonoBehaviour
   private void OnTriggerEnter(Collider other)
   {
     if(readyToDie)
-    {
-      if(other.gameObject.layer == LayerMask.NameToLayer("Ship"))
-      {
-        health
-      }      
+    {      
     }
   }
 
@@ -70,12 +77,12 @@ public class Shooter : MonoBehaviour
   {
     if(input != null)
     {
-      targetInput = input;
+      shooterInput = input;
     }
 
-    startPosition = targetInput.StartPosition + new Vector3(targetInput.Offset.x, 0.0f, targetInput.Offset.y);
+    startPosition = shooterInput.StartPosition + new Vector3(shooterInput.Offset.x, 0.0f, shooterInput.Offset.y);
     transform.position = startPosition;
-    stopPosition = targetInput.StopPosition + new Vector3(targetInput.Offset.x, 0.0f, targetInput.Offset.y);
+    stopPosition = shooterInput.StopPosition + new Vector3(shooterInput.Offset.x, 0.0f, shooterInput.Offset.y);
   } 
 }
 
