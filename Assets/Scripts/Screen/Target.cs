@@ -84,14 +84,10 @@ public class Target : MonoBehaviour
   private void OnTriggerExit(Collider other)
   {
     readyToDie = true;
-    
-    if(gameObject.GetComponent<Rigidbody>() as Rigidbody != null)
+    var rb = gameObject.AddComponent<Rigidbody>() as Rigidbody;
+    if(rb != null)
     {
-      var rb = gameObject.AddComponent<Rigidbody>() as Rigidbody;
-      if(rb != null)
-      {
-        rb.useGravity = false;  
-      }    
+      rb.useGravity = false;  
     }    
   }
 
