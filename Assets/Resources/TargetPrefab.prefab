@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 135811015367138660}
   - component: {fileID: 23220373311199034}
   - component: {fileID: 114348865616438588}
+  - component: {fileID: 114752240692138118}
   m_Layer: 8
   m_Name: TargetPrefab
   m_TagString: TargetsTag
@@ -93,6 +94,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95fea7677379c474db544fac061cb006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114752240692138118
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1926452250661554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e636c572569774a8ab1d9db6565dd2b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingHealth: 2
 --- !u!135 &135811015367138660
 SphereCollider:
   m_ObjectHideFlags: 1

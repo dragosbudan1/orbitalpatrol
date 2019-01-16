@@ -77,7 +77,14 @@ public class Target : MonoBehaviour
       if(other.gameObject.layer == LayerMask.NameToLayer("Walls"))
       {
         Destroy(transform.gameObject);
-      }      
+      }
+
+      if(other.gameObject.layer == LayerMask.NameToLayer("Ship")) {
+        var damageable = other.gameObject.GetComponent<Damageable>();
+        if(damageable) {
+             
+        }
+      }
     }
   }
 
