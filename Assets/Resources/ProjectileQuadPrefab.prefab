@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 23584589866794828}
   - component: {fileID: 135253449306711170}
   - component: {fileID: 114662588262849020}
+  - component: {fileID: 114832963833552754}
   m_Layer: 0
   m_Name: ProjectileQuadPrefab
   m_TagString: Untagged
@@ -93,6 +94,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8843806a2b6394cb2be543738be8ad25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114832963833552754
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1515367242292112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 407cabb28fc114572b493599a45279f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnDamageableHit:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: DamageableEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  OnNoDamageableEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: NonDamageableEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!135 &135253449306711170
 SphereCollider:
   m_ObjectHideFlags: 1

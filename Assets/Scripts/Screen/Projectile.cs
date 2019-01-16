@@ -6,6 +6,8 @@ public class ProjectileInput
 {
   public float Speed { get; set; }
   public Vector3 Forward { get; set; }
+
+  public float Damage {get; set;}
 }
 
 public class Projectile : MonoBehaviour
@@ -37,18 +39,5 @@ public class Projectile : MonoBehaviour
     }
 
     projectileInput = input;
-  }
-
-  private void OnTriggerEnter(Collider other)
-  {
-    if(other.gameObject.layer != LayerMask.NameToLayer("Ship"))
-    {
-      Destroy(transform.gameObject);
-    }
-    
-    if(other.gameObject.layer == LayerMask.NameToLayer("Targets"))
-    {
-      Destroy(other.gameObject);
-    }
   }
 }

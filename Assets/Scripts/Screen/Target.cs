@@ -74,7 +74,7 @@ public class Target : MonoBehaviour
   {
     if(readyToDie)
     {
-      if(other.gameObject.layer != LayerMask.NameToLayer("Targets"))
+      if(other.gameObject.layer == LayerMask.NameToLayer("Walls"))
       {
         Destroy(transform.gameObject);
       }      
