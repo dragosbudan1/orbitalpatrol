@@ -2,31 +2,39 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-[Serializable]
-public class DamageableEvent : UnityEvent<Damager, Damageable> {}
-
-[Serializable]
-public class NonDamageableEvent : UnityEvent<Damager> {}
 
 public class Damager : MonoBehaviour {
-  public DamageableEvent OnDamageableHit;
-  public NonDamageableEvent OnNoDamageableEvent;
+  public int damage = 1;
+  private bool isForwardSet = false;
+  private Vector3 startPosition;
+  private Vector3 forward;
+  public float raycastLength;
 
-  public float damage = 1.0f;
+  void Start() {
+    startPosition = transform.position;
+    raycastLength = transform.localScale.x;
+  }
 
-  private void OnTriggerEnter(Collider other) {
+  void Update() {
+    if(!isForwardSet && startPosition != transform.position) {
+      forward = (transform.position - startPosition).normalized;
+      isForwardSet = true;
+    } else {
+     CheckHits();
+    }           
+  }
 
-    Debug.Log("damage is: " + damage);
-
-    if(other.gameObject.layer != LayerMask.NameToLayer("Ship")) {
-      Destroy(transform.gameObject);
-    }
-    
-    if(other.gameObject.layer == LayerMask.NameToLayer("Targets")) {
-      var damageable = other.gameObject.GetComponent<Damageable>();
+  void CheckHits() {
+    var raycastStart = transform.position - (forward * (raycastLength / 2));
+    var ray = new Ray(raycastStart, forward);
+    RaycastHit hit;
+    if (Physics.Raycast(ray, out hit, raycastLength)) {
+      var go = hit.transform.gameObject;
+      var damageable =  go.GetComponent<Damageable>();
       if(damageable) {
-        damageable.TakeDamage(this);
+        damageable.TakeDamage(new DamageableInput { Damage = damage });
       }
+      Destroy(transform.gameObject); 
     }
   }
 }

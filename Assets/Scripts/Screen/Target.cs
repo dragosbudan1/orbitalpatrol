@@ -35,14 +35,11 @@ public class Target : MonoBehaviour
 
   }
  
-  void Update()
-  { 
+  void Update() { 
     switch(state)
     {
-      case TargetState.Start:
-      {
-        if(Vector3.Distance(transform.position, stopPosition) > 30)
-        {
+      case TargetState.Start: {
+        if(Vector3.Distance(transform.position, stopPosition) > 30) {
           transform.position = Vector3.Lerp(transform.position, stopPosition, targetInput.Speed);
         } else {
           state = TargetState.Stop;
@@ -51,45 +48,39 @@ public class Target : MonoBehaviour
       }
       break;
 
-      case TargetState.Stop:
-      {
+      case TargetState.Stop: {
         secondsStopped = (DateTime.Now - stopTime).Seconds;
         //count down seconds
-        if(secondsStopped >= targetInput.TimeStopped)
-        {
+        if(secondsStopped >= targetInput.TimeStopped) {
           state = TargetState.Exit;
         }
       }
       break;
 
-      case TargetState.Exit:
-      {
+      case TargetState.Exit: {
         transform.Translate(targetInput.ExitDirection * targetInput.Speed * 10, Space.World);
       }
       break;
     }
   }
 
-  private void OnTriggerEnter(Collider other)
-  {
-    if(readyToDie)
-    {
-      if(other.gameObject.layer == LayerMask.NameToLayer("Walls"))
-      {
+  private void OnTriggerEnter(Collider other) {
+    if(readyToDie) {
+      if(other.gameObject.layer == LayerMask.NameToLayer("Walls")) {
         Destroy(transform.gameObject);
       }
 
       if(other.gameObject.layer == LayerMask.NameToLayer("Ship")) {
         var damageable = other.gameObject.GetComponent<Damageable>();
         if(damageable) {
-             
+          damageable.TakeDamage(new DamageableInput { Damage = 2 });
         }
+        Destroy(transform.gameObject); 
       }
     }
   }
 
-  private void OnTriggerExit(Collider other)
-  {
+  private void OnTriggerExit(Collider other) {
     readyToDie = true;
     if(gameObject.GetComponent<Rigidbody>() == null) {
       var rb = gameObject.AddComponent<Rigidbody>() as Rigidbody;
@@ -99,10 +90,8 @@ public class Target : MonoBehaviour
     }    
   }
 
-  void OnInitialise(TargetInput input)
-  {
-    if(input != null)
-    {
+  void OnInitialise(TargetInput input) {
+    if(input != null) {
       targetInput = input;
     }
 

@@ -4,26 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TargetCluster
-{
-  public List<GameObject> GameObjects { get; set; }
-  public bool Alive { get; set; }
-}
-
 public class Targets : MonoBehaviour
 {
   private GameObject prefab;
 
   public int clusterCount = 1;
   private int maxCurrentTargetClusters = 1;
-  private List<TargetCluster> activeTargetClusters;
 
   public float TargetSpeed = 2f;
   public int TimeStopped = 5;
 
   void Awake()
   {
-    activeTargetClusters = new List<TargetCluster>();
     prefab = Resources.Load("TargetPrefab") as GameObject;
   }
   void Start()
@@ -41,16 +33,8 @@ public class Targets : MonoBehaviour
       }       
     }      
   }
-
-  void OnGUI()
+  private void CreateTargetCluster()
   {
-    GUI.Label(new Rect(10, 10, 100, 20), string.Format("Active Clusters: {0}", activeTargetClusters.Count));
-  }
-
-  private TargetCluster CreateTargetCluster()
-  {
-    var targetList = new List<GameObject>();
-
     var targetSpeed = GetTargetSpeed();
     var startPosition = GetStartPosition();
     var stopPosition = GetStopPosition();
@@ -71,11 +55,8 @@ public class Targets : MonoBehaviour
           ExitDirection = exitDirection,
           TimeStopped = timeStopped
         });   
-
-        targetList.Add(target);  
       }
     }      
-    return new TargetCluster { GameObjects = targetList, Alive = false };
   }
 
   private Vector3 GetStartPosition()

@@ -6,7 +6,6 @@ public class ProjectileInput
 {
   public float Speed { get; set; }
   public Vector3 Forward { get; set; }
-
   public float Damage {get; set;}
 }
 
@@ -25,8 +24,8 @@ public class Projectile : MonoBehaviour
     transform.rotation = Quaternion.Euler(-90, 0, 0);
   }
 
-  void FixedUpdate()
-  {   
+  void Update()
+  {
     transform.Translate(projectileInput.Forward * projectileInput.Speed, Space.World);
   }
 

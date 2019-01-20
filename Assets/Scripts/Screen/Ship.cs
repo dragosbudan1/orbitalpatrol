@@ -32,7 +32,7 @@ public class Ship : MonoBehaviour
   private Rigidbody rb;
   private float colliderRadius;
   private GameObject projectilePrefab;
-  private bool shootingActive = false;
+  public bool shootingActive = false;
   private bool isSpawning = false;
 
   public float steeringModifier = 0.25f;
@@ -63,7 +63,6 @@ public class Ship : MonoBehaviour
   void FixedUpdate()
   {
     rb.velocity = Vector3.zero;
-
     if(shootingActive && !isSpawning)
     {
       StartCoroutine(OnShootAction());
@@ -73,7 +72,6 @@ public class Ship : MonoBehaviour
   void Update() 
   {
     var target = Quaternion.Euler(0, shipInput.Steering, 0);
-    // Dampen towards the target rotation
     transform.rotation = Quaternion.Slerp(transform.rotation, target, RotationModifier);
     transform.position = new Vector3(transform.position.x, 0.0f, transform.position.z);
     transform.Translate(transform.forward * shipInput.Throttle, Space.World);
@@ -82,8 +80,7 @@ public class Ship : MonoBehaviour
   private void OnMessage(int from, JToken data) 
   {
       var action = (string)(data["action"]);
-      // AirConsole.instance.Message(from, "Full of pixels!");
-      if(data != null &&  action != null)
+      if(data != null && action != null)
       {
         switch(action)
         {
@@ -124,15 +121,13 @@ public class Ship : MonoBehaviour
     isSpawning = true;
 
     yield return new WaitForSeconds(bulletDelay);
-    GameObject projectile = Instantiate(projectilePrefab, transform.position + transform.forward * colliderRadius, Quaternion.identity) as GameObject;    
+    GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity) as GameObject;    
     var projectileInput = new ProjectileInput(){ Speed = projectileSpeedModifier, Forward = transform.forward };
     if(projectileInput != null)
       projectile.SendMessage("Initialise", projectileInput);
 
     isSpawning = false;      
   }
-
-
   
   private float MapDeviceThrottle(float deviceThrottle)
   {

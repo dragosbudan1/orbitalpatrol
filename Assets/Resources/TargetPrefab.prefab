@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 135811015367138660}
   - component: {fileID: 23220373311199034}
   - component: {fileID: 114348865616438588}
-  - component: {fileID: 114752240692138118}
+  - component: {fileID: 114188510048909106}
   m_Layer: 8
   m_Name: TargetPrefab
   m_TagString: TargetsTag
@@ -83,18 +83,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1926452250661554}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114348865616438588
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1926452250661554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95fea7677379c474db544fac061cb006, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &114752240692138118
+--- !u!114 &114188510048909106
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -106,6 +95,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startingHealth: 2
+--- !u!114 &114348865616438588
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1926452250661554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95fea7677379c474db544fac061cb006, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!135 &135811015367138660
 SphereCollider:
   m_ObjectHideFlags: 1
