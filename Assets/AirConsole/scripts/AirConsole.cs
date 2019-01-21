@@ -12,6 +12,8 @@ using UnityEngine.SceneManagement;
 namespace NDream.AirConsole {
 	public enum StartMode {
 		VirtualControllers,
+		Debug,
+		DebugVirtualControllers,
 		Normal,
 		NoBrowserStart
 	}
@@ -620,7 +622,7 @@ namespace NDream.AirConsole {
 		}
 
 		/// <summary>
-		/// Returns the device ID of the master controller.
+		/// Returns the device ID of the master controller. Premium devices are prioritized.
 		/// </summary>
 		public int GetMasterControllerDeviceId () {
 			if (!IsAirConsoleUnityPluginReady ()) {
@@ -628,9 +630,14 @@ namespace NDream.AirConsole {
 				throw new NotReadyException ();
 				
 			}
-			List<int> result = GetControllerDeviceIds ();
-			if (result.Count > 0) {
-				return result [0];
+			List<int> result_premium = GetPremiumDeviceIds();
+			if (result_premium.Count > 0) {
+				return result_premium [0];
+			} else {
+				List<int> result = GetControllerDeviceIds ();
+				if (result.Count > 0) {
+					return result [0];
+				}
 			}
 			return 0;
 		}
@@ -949,6 +956,10 @@ namespace NDream.AirConsole {
 			// always set default object name 
 			// important for unity webgl communication
 			gameObject.name = "AirConsole";
+
+		#if UNITY_ANDROID 
+			defaultScreenHeight = Screen.height; 
+		#endif
 		}
 
 		void Start () {
@@ -1019,6 +1030,13 @@ namespace NDream.AirConsole {
 			while (eventQueue.Count > 0) {
 				eventQueue.Dequeue ().Invoke ();
 			}
+
+		#if UNITY_ANDROID
+			//back button on TV remotes
+			if (Input.GetKeyDown(KeyCode.Escape)) {
+				Application.Quit(); 
+			}
+		#endif
 		}
 
 		void OnApplicationQuit () {
@@ -1051,7 +1069,11 @@ namespace NDream.AirConsole {
 				}
 				
 				if (this.onDeviceStateChange != null) {
-					eventQueue.Enqueue (() => this.onDeviceStateChange (deviceId, GetDevice (_device_id)));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onDeviceStateChange != null){ 
+							this.onDeviceStateChange (deviceId, GetDevice (_device_id));
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1078,7 +1100,11 @@ namespace NDream.AirConsole {
 				int deviceId = (int)msg ["device_id"];
 				
 				if (this.onConnect != null) {
-					eventQueue.Enqueue (() => this.onConnect (deviceId));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onConnect != null){ 
+							this.onConnect (deviceId);
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1105,7 +1131,11 @@ namespace NDream.AirConsole {
 				int deviceId = (int)msg ["device_id"];
 				
 				if (this.onDisconnect != null) {
-					eventQueue.Enqueue (() => this.onDisconnect (deviceId));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onDisconnect != null){ 
+							this.onDisconnect (deviceId);
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1131,7 +1161,11 @@ namespace NDream.AirConsole {
 				int deviceId = (int)msg ["device_id"];
 				
 				if (this.onCustomDeviceStateChange != null) {
-					eventQueue.Enqueue (() => this.onCustomDeviceStateChange (deviceId, GetCustomDeviceState (deviceId)));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onCustomDeviceStateChange != null){ 
+							this.onCustomDeviceStateChange (deviceId, GetCustomDeviceState (deviceId));
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1150,11 +1184,21 @@ namespace NDream.AirConsole {
 		void OnMessage (JObject msg) {
 			
 			if (this.onMessage != null) {
-				eventQueue.Enqueue (() => this.onMessage ((int)msg ["from"], (JToken)msg ["data"]));
+				eventQueue.Enqueue (delegate() { 
+					if(this.onMessage != null){ 
+						this.onMessage ((int)msg ["from"], (JToken)msg ["data"]);
+					}
+				}); 
 			}
 		}
 		
 		void OnReady (JObject msg) {
+
+		#if UNITY_ANDROID && !UNITY_EDITOR
+			if (webViewLoadingCanvas != null){
+				GameObject.Destroy (webViewLoadingCanvas.gameObject);
+			}
+		#endif
 			
 			// parse server_time_offset
 			_server_time_offset = (int)msg ["server_time_offset"];
@@ -1176,7 +1220,11 @@ namespace NDream.AirConsole {
 			}
 			
 			if (this.onReady != null) {
-				eventQueue.Enqueue (() => this.onReady ((string)msg ["code"]));
+				eventQueue.Enqueue (delegate() { 
+					if(this.onReady != null){ 
+						this.onReady ((string)msg ["code"]);
+					}
+				}); 
 			}
 		}
 
@@ -1191,7 +1239,11 @@ namespace NDream.AirConsole {
 				int deviceId = (int)msg ["device_id"];
 				
 				if (this.onDeviceProfileChange != null) {
-					eventQueue.Enqueue (() => this.onDeviceProfileChange (deviceId));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onDeviceProfileChange != null){ 
+							this.onDeviceProfileChange (deviceId);
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1213,7 +1265,11 @@ namespace NDream.AirConsole {
 			try {
 				
 				if (this.onAdShow != null) {
-					eventQueue.Enqueue (() => this.onAdShow ());
+					eventQueue.Enqueue (delegate() { 
+						if(this.onAdShow != null){ 
+							this.onAdShow ();
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1230,14 +1286,18 @@ namespace NDream.AirConsole {
 
 		void OnAdComplete (JObject msg) {
 #if UNITY_ANDROID && !UNITY_EDITOR
-            webViewObject.SetMargins(0, 0, 0, Screen.height - webViewHeight);
+		webViewObject.SetMargins(0, 0, 0, defaultScreenHeight - webViewHeight);
 #endif
 			try {
 				
 				bool adWasShown = (bool)msg ["ad_was_shown"];
 				
 				if (this.onAdComplete != null) {
-					eventQueue.Enqueue (() => this.onAdComplete (adWasShown));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onAdComplete != null){ 
+							this.onAdComplete (adWasShown);
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1259,7 +1319,11 @@ namespace NDream.AirConsole {
 			try {
 				
 				if (this.onGameEnd != null) {
-					eventQueue.Enqueue (() => this.onGameEnd ());
+					eventQueue.Enqueue (delegate() { 
+						if(this.onGameEnd != null){ 
+							this.onGameEnd ();
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1280,7 +1344,11 @@ namespace NDream.AirConsole {
 				JToken highscores = msg ["highscores"];
 				
 				if (this.onHighScores != null) {
-					eventQueue.Enqueue (() => this.onHighScores (highscores));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onHighScores != null){ 
+							this.onHighScores (highscores);
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1305,7 +1373,11 @@ namespace NDream.AirConsole {
 				} 
 
 				if (this.onHighScoreStored != null) {
-					eventQueue.Enqueue (() => this.onHighScoreStored (highscore));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onHighScoreStored != null){ 
+							this.onHighScoreStored (highscore);
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1326,7 +1398,11 @@ namespace NDream.AirConsole {
 				string uid = (string)msg ["uid"];
 
 				if (this.onPersistentDataStored != null) {
-					eventQueue.Enqueue (() => this.onPersistentDataStored (uid));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onPersistentDataStored != null){ 
+							this.onPersistentDataStored (uid);
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1347,7 +1423,11 @@ namespace NDream.AirConsole {
 				JToken data = msg ["data"];
 				
 				if (this.onPersistentDataLoaded != null) {
-					eventQueue.Enqueue (() => this.onPersistentDataLoaded (data));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onPersistentDataLoaded != null){ 
+							this.onPersistentDataLoaded (data);
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1368,7 +1448,11 @@ namespace NDream.AirConsole {
 				int device_id = (int)msg ["device_id"];
 				
 				if (this.onPremium != null) {
-					eventQueue.Enqueue (() => this.onPremium (device_id));
+					eventQueue.Enqueue (delegate() { 
+						if(this.onPremium != null){ 
+							this.onPremium (device_id);
+						}
+					}); 
 				}
 				
 				if (Settings.debug.info) {
@@ -1412,6 +1496,7 @@ namespace NDream.AirConsole {
 		private UnityEngine.UI.Image webViewLoadingImage;
 		private UnityEngine.UI.Image webViewLoadingBG;
 		private int webViewHeight;
+		private int defaultScreenHeight;
 #endif
 		private List<JToken> _devices = new List<JToken> ();
 		private int _device_id;
@@ -1437,7 +1522,11 @@ namespace NDream.AirConsole {
 
 			switch (mode) {
 			case StartMode.VirtualControllers:
-				return Settings.AIRCONSOLE_NORMAL_URL;
+				return Settings.AIRCONSOLE_SIMULATOR_URL;
+			case StartMode.Debug:
+				return Settings.AIRCONSOLE_DEBUG_URL;
+			case StartMode.DebugVirtualControllers:
+				return Settings.AIRCONSOLE_DEBUG_SIMULATOR_URL;
 			case StartMode.Normal:
 				return Settings.AIRCONSOLE_URL;
 			default:
@@ -1481,6 +1570,11 @@ namespace NDream.AirConsole {
 
 
 #if UNITY_ANDROID
+
+		private int GetScaledWebViewHeight(){
+			return (int)((float)webViewHeight * Screen.height / defaultScreenHeight);
+		}
+
         private void InitWebView() {
 
             if (this.androidTvGameVersion != null && this.androidTvGameVersion != "") {
@@ -1493,10 +1587,10 @@ namespace NDream.AirConsole {
 
                     string url = Settings.AIRCONSOLE_BASE_URL;
                     url += "client?id=androidunity-" + Settings.VERSION;
-                    url += "&game-id=" + Application.bundleIdentifier;
+                    url += "&game-id=" + Application.identifier;
                     url += "&game-version=" + this.androidTvGameVersion;
 
-                    webViewObject.SetMargins(0, Screen.height, 0, -Screen.height);
+					webViewObject.SetMargins(0, 0, 0, defaultScreenHeight);
                     webViewObject.SetVisibility(true);
                     webViewObject.LoadURL(url);
 
@@ -1519,7 +1613,7 @@ namespace NDream.AirConsole {
 					webViewLoadingImage.preserveAspect = true;
 
 					if (webViewLoadingSprite == null){
-						webViewLoadingImage.sprite = Resources.Load("AirConsoleLogoLoadingScreen", typeof(Sprite)) as Sprite;
+						webViewLoadingImage.sprite = Resources.Load("androidtv-loadingscreen", typeof(Sprite)) as Sprite;
 					}
 #endif
                 }
@@ -1535,7 +1629,7 @@ namespace NDream.AirConsole {
             Debug.Log("onLaunchApp");
 			string gameId = (string)msg ["game_id"];
 			string gameVersion = (string)msg ["game_version"];
-			if (gameId != Application.bundleIdentifier || gameVersion != AirConsole.instance.androidTvGameVersion) {
+			if (gameId != Application.identifier || gameVersion != AirConsole.instance.androidTvGameVersion) {
 				
 				AndroidJavaClass up = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
 				AndroidJavaObject ca = up.GetStatic<AndroidJavaObject>("currentActivity");
@@ -1553,7 +1647,7 @@ namespace NDream.AirConsole {
 						Debug.Log("getLaunchIntentForPackage for " + gameId + " failed");
 					}
 				}
-				if (launchIntent != null && gameId != Application.bundleIdentifier) {
+				if (launchIntent != null && gameId != Application.identifier) {
 					ca.Call("startActivity", launchIntent);
 				} else {
 					Application.OpenURL("market://details?id=" + gameId);
@@ -1579,14 +1673,13 @@ namespace NDream.AirConsole {
 				webViewHeight = h;
 			}
 
-            webViewObject.SetMargins(0, 0, 0, Screen.height - h);
+			webViewObject.SetMargins(0, 0, 0, defaultScreenHeight - webViewHeight);
 			if (androidUIResizeMode == AndroidUIResizeMode.ResizeCamera  || androidUIResizeMode == AndroidUIResizeMode.ResizeCameraAndReferenceResolution) {
-				Camera.main.pixelRect = new Rect (0, 0, Screen.width, Screen.height - h);
+				Camera.main.pixelRect = new Rect (0, 0, Screen.width, Screen.height - GetScaledWebViewHeight());
 			}
         }
 
         private void OnUnityWebviewPlatformReady(JObject msg) {
-			GameObject.Destroy (webViewLoadingCanvas.gameObject);
 			webViewObject.SetMargins(0, 0, 0, 0);
 		}
 
@@ -1596,14 +1689,14 @@ namespace NDream.AirConsole {
 			}
 
 			if (androidUIResizeMode == AndroidUIResizeMode.ResizeCamera  || androidUIResizeMode == AndroidUIResizeMode.ResizeCameraAndReferenceResolution) {
-				Camera.main.pixelRect = new Rect(0, 0, Screen.width, Screen.height - webViewHeight);
+				Camera.main.pixelRect = new Rect(0, 0, Screen.width, Screen.height - GetScaledWebViewHeight());
 			}
 
 			if (androidUIResizeMode == AndroidUIResizeMode.ResizeCameraAndReferenceResolution) {
 				UnityEngine.UI.CanvasScaler[] allCanvasScalers = GameObject.FindObjectsOfType<UnityEngine.UI.CanvasScaler> ();
 				
 				for (int i = 0; i < allCanvasScalers.Length; ++i) {
-					allCanvasScalers[i].referenceResolution = new Vector2 (allCanvasScalers[i].referenceResolution.x, allCanvasScalers[i].referenceResolution.y / (allCanvasScalers[i].referenceResolution.y - webViewHeight) * allCanvasScalers[i].referenceResolution.y);
+					allCanvasScalers[i].referenceResolution = new Vector2 (allCanvasScalers[i].referenceResolution.x, allCanvasScalers[i].referenceResolution.y / (allCanvasScalers[i].referenceResolution.y - GetScaledWebViewHeight()) * allCanvasScalers[i].referenceResolution.y);
 				}
 			}
 		}

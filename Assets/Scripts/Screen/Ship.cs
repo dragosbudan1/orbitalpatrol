@@ -150,21 +150,23 @@ public class Ship : MonoBehaviour
     }
   }
 
-  private float GetSteering(float deviceSteering)
-  {
-    if(deviceSteering < ShipSteeringLimit.MaxLeft) 
-    { 
+  private float GetSteering(float deviceSteering) {
+    if(deviceSteering < ShipSteeringLimit.MaxLeft) { 
       deviceSteering = ShipSteeringLimit.MaxLeft; 
-    }
-    else if(deviceSteering > ShipSteeringLimit.MaxRight) 
-    { 
+    } else if(deviceSteering > ShipSteeringLimit.MaxRight) { 
       deviceSteering = ShipSteeringLimit.MaxRight; 
-    }
-    else if(deviceSteering >= ShipSteeringLimit.MinLeft && deviceSteering <= ShipSteeringLimit.MinRight )
-    {
+    } else if(deviceSteering >= ShipSteeringLimit.MinLeft && deviceSteering <= ShipSteeringLimit.MinRight ) {
       deviceSteering = ShipSteeringLimit.Zero;
     }
 
+    if(deviceSteering != ShipSteeringLimit.Zero) {
+      if(deviceSteering < ShipSteeringLimit.MinLeft) {
+        deviceSteering += ShipSteeringLimit.MinRight;
+      } else {
+        deviceSteering += ShipSteeringLimit.MinLeft;
+      }
+    }
+    
     return deviceSteering * steeringModifier;
   }
 }
