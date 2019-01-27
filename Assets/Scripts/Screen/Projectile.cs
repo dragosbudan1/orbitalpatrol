@@ -9,9 +9,9 @@ public class ProjectileInput
   public float Damage {get; set;}
 }
 
-public class Projectile : MonoBehaviour
+public class Projectile : MonoBehaviour  
 {
-  private ProjectileInput projectileInput;
+  private ProjectileInput projectileInput; 
 
   void Awake()
   {

@@ -49,13 +49,13 @@ var airconsole = new AirConsole({"orientation": "portrait", "device_motion": 50}
 var rectangular = new Button("button-rectangular", {
   "down": function() {
     var message = {
-      'action': 'shootDown',    
+      'a': 'sD',    
     }
     airconsole.message(AirConsole.SCREEN, message);
   },
   "up": function() {
     var message = {
-      'action': 'shootUp',    
+      'a': 'sU',    
     }
     airconsole.message(AirConsole.SCREEN, message);
   }
@@ -63,12 +63,12 @@ var rectangular = new Button("button-rectangular", {
 
 airconsole.onDeviceMotion = function(data) {
   var message = {
-  'action': 'move',
-  'packet': {
-    'aroundX': data.beta,
-    'aroundY': data.gamma
-  }  
-};
+    'a': 'm',
+    'p': {
+      'x': data.beta.toFixed(2),
+      'y': data.gamma.toFixed(2)
+    }  
+  };
 
   airconsole.message(AirConsole.SCREEN, message);
 }

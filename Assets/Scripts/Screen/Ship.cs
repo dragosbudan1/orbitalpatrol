@@ -44,6 +44,7 @@ public class Ship : MonoBehaviour
   public float throttleMaxAngle = 20.0f;
 
   public float RotationModifier = 0.2f;
+  public int Id = -1;
   
   void Start() 
   {
@@ -77,20 +78,20 @@ public class Ship : MonoBehaviour
     transform.Translate(transform.forward * shipInput.Throttle, Space.World);
   }
 
-  private void OnMessage(int from, JToken data) 
+  private void OnMessage(JToken data) 
   {
-      var action = (string)(data["action"]);
+      var action = (string)(data["a"]);
       if(data != null && action != null)
       {
         switch(action)
         {
-          case "move":
+          case "m":
             OnMoveAction(data);
             break;
-          case "shootDown":   
+          case "sD":   
             shootingActive = true;         
             break;
-          case "shootUp":   
+          case "sU":   
             shootingActive = false;         
             break;
         }        
@@ -101,51 +102,47 @@ public class Ship : MonoBehaviour
       }
   }
 
-  private void OnMoveAction(JToken data)
-  {
-    var deviceSteering = (float)(data["packet"]["aroundX"]);
-    var deviceThrottle = (float)(data["packet"]["aroundY"]);
+  private void OnMoveAction(JToken data) {
+    var deviceSteering = float.Parse((string)data["p"]["x"]);
+    var deviceThrottle = float.Parse((string)data["p"]["y"]);  
 
     shipInput.Steering += GetSteering(deviceSteering);
 
-    if(shipInput.Steering > 360 || shipInput.Steering < -360)
-    {
+    if(shipInput.Steering > 360 || shipInput.Steering < -360) {
       shipInput.Steering = 0.0f; 
     }
 
-    shipInput.Throttle = GetThrottle(deviceThrottle);
+    shipInput.Throttle = GetThrottle(deviceThrottle); 
   }
 
-  private IEnumerator OnShootAction()
-  {
+  private IEnumerator OnShootAction() {
     isSpawning = true;
 
     yield return new WaitForSeconds(bulletDelay);
     GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity) as GameObject;    
     var projectileInput = new ProjectileInput(){ Speed = projectileSpeedModifier, Forward = transform.forward };
     if(projectileInput != null)
-      projectile.SendMessage("Initialise", projectileInput);
+      projectile.SendMessage("Initialise", projectileInput); 
 
     isSpawning = false;      
   }
+
+  private void OnDeviceConnect(int deviceId) {
+    if(Id == -1) {
+      Id = deviceId;
+    }
+  }
   
-  private float MapDeviceThrottle(float deviceThrottle)
-  {
+  private float MapDeviceThrottle(float deviceThrottle) {
     return (ShipThrottleLimit.Min - deviceThrottle) * (-100 / (System.Math.Abs(ShipThrottleLimit.Max) + System.Math.Abs(ShipThrottleLimit.Min))); 
   }
 
-  private float GetThrottle(float deviceThrottle)
-  {
-    if(deviceThrottle < ShipThrottleLimit.Min)
-    {
+  private float GetThrottle(float deviceThrottle) {
+    if(deviceThrottle < ShipThrottleLimit.Min) {
       return ShipThrottleLimit.Neutral;
-    }
-    else if (deviceThrottle > ShipThrottleLimit.Max)
-    {
+    } else if (deviceThrottle > ShipThrottleLimit.Max) {
       return MapDeviceThrottle(ShipThrottleLimit.Max) * speedModifier;  
-    }
-    else
-    {
+    } else {
       return MapDeviceThrottle(deviceThrottle) * speedModifier;  
     }
   }
