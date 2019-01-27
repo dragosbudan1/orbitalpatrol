@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 public class AirConsoleManager : MonoBehaviour {
 
-  public List<GameObject> ships;
+  public Dictionary<int, GameObject> ships;
   private GameObject shipPrefab;
   
   void Awake() {
@@ -15,28 +15,38 @@ public class AirConsoleManager : MonoBehaviour {
 		AirConsole.instance.onConnect += OnConnect;
 		AirConsole.instance.onDisconnect += OnDisconnect;
 
-    ships = new List<GameObject>();
+    ships = new Dictionary<int, GameObject>();
     shipPrefab = Resources.Load("Ship") as GameObject;
   }
 
   	void OnReady (string code) {
     }
 
-	void OnMessage (int from, JToken data) {
-		Debug.Log(string.Format("Message from {0}", from));
+	void OnMessage (int deviceId, JToken data) {
+    if(ships.ContainsKey(deviceId)) {
+      try {
+        ships[deviceId].SendMessage("OnMessage", data);
+      } catch {
+        ships.Remove(deviceId);
+      }
+    }
 	}
 
 	void OnConnect (int deviceId) {
     Debug.Log("Device Connected: " + deviceId);
     GameObject ship = Instantiate(shipPrefab, transform.position, Quaternion.identity) as GameObject;    
     if(ship != null) {
-      ships.Add(ship);
+      ships.Add(deviceId, ship);
       ship.SendMessage("OnDeviceConnect", deviceId);
     }  
   }
 
-	void OnDisconnect (int device_id) {
-		Debug.Log("Device Disconnected: " + device_id);
+	void OnDisconnect (int deviceId) {
+		Debug.Log("Device Disconnected: " + deviceId);
+    if(ships.ContainsKey(deviceId)) {
+      Destroy(ships[deviceId]);
+      ships.Remove(deviceId);
+    }
 	}
 
   void CreateShip(int deviceId) {

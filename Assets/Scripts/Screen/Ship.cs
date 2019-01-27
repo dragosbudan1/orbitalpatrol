@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
 
 public class ShipInput
@@ -57,8 +56,6 @@ public class Ship : MonoBehaviour
       rb = GetComponent<Rigidbody>();      
       colliderRadius = (GetComponent<Collider>() as CapsuleCollider).radius;
       projectilePrefab = Resources.Load("ProjectileQuadPrefab") as GameObject;
-
-      AirConsole.instance.onMessage += OnMessage;
   } 
 
   void FixedUpdate()
