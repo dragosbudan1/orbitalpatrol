@@ -1,0 +1,16 @@
+<script type="text/javascript" src="https://www.airconsole.com/api/airconsole-1.7.0.js"></script>
+
+<script type="text/javascript">
+var airconsole = new AirConsole({"orientation": "portrait", "device_motion": 50});
+
+airconsole.onDeviceMotion = function(data) {
+  var message = {
+  'a': 'm',
+  'p': {
+    'x': data.beta
+  }  
+};
+
+  airconsole.message(AirConsole.SCREEN, message);
+}
+</script>

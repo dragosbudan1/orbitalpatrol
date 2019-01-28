@@ -48,8 +48,4 @@ public class AirConsoleManager : MonoBehaviour {
       ships.Remove(deviceId);
     }
 	}
-
-  void CreateShip(int deviceId) {
-
-  }
 }
