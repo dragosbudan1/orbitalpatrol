@@ -124,9 +124,12 @@ public class Ship : MonoBehaviour
     isSpawning = false;      
   }
 
-  private void OnDeviceConnect(int deviceId) {
-    if(Id == -1) {
-      Id = deviceId;
+  private void OnDeviceConnect(PlayerSettings playerSettings) {
+    if(playerSettings != null) {
+      if(Id == -1) {
+        Id = playerSettings.DeviceId;
+        ChangeColor(playerSettings.ShipColor);
+      }
     }
   }
   
@@ -150,7 +153,7 @@ public class Ship : MonoBehaviour
     } else if(deviceSteering > ShipSteeringLimit.MaxRight) { 
       deviceSteering = ShipSteeringLimit.MaxRight; 
     } else if(deviceSteering >= ShipSteeringLimit.MinLeft && deviceSteering <= ShipSteeringLimit.MinRight ) {
-      deviceSteering = ShipSteeringLimit.Zero;
+     deviceSteering = ShipSteeringLimit.Zero;
     }
 
     if(deviceSteering != ShipSteeringLimit.Zero) {
@@ -163,4 +166,10 @@ public class Ship : MonoBehaviour
     
     return deviceSteering * steeringModifier;
   }
+
+  void ChangeColor(Color color) {
+    var rend = GetComponent<Renderer>();
+    rend.material.color = color;
+  }
+
 }

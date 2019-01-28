@@ -4,11 +4,17 @@ using UnityEngine;
 using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
 
+public class PlayerSettings {
+  public int DeviceId { get; set; }
+  public Color ShipColor { get; set; }
+}
+
 public class AirConsoleManager : MonoBehaviour {
 
   public Dictionary<int, GameObject> ships;
   private GameObject shipPrefab;
-  
+  private List<Color> shipColors;
+
   void Awake() {
     AirConsole.instance.onReady += OnReady;
 		AirConsole.instance.onMessage += OnMessage;
@@ -17,6 +23,13 @@ public class AirConsoleManager : MonoBehaviour {
 
     ships = new Dictionary<int, GameObject>();
     shipPrefab = Resources.Load("Ship") as GameObject;
+
+    shipColors = new List<Color> {
+      Color.red, 
+      Color.blue, 
+      Color.yellow, 
+      Color.green
+    };
   }
 
   	void OnReady (string code) {
@@ -37,7 +50,10 @@ public class AirConsoleManager : MonoBehaviour {
     GameObject ship = Instantiate(shipPrefab, transform.position, Quaternion.identity) as GameObject;    
     if(ship != null) {
       ships.Add(deviceId, ship);
-      ship.SendMessage("OnDeviceConnect", deviceId);
+      ship.SendMessage("OnDeviceConnect", new PlayerSettings { 
+        DeviceId = deviceId, 
+        ShipColor = shipColors[ships.Count - 1]
+      });
     }  
   }
 

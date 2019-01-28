@@ -572,6 +572,7 @@ public class WebViewObject : MonoBehaviour
             return 0;
         return webView.Get<int>("progress");
 #endif
+        return 0;
     }
 
     public bool CanGoBack()
@@ -591,6 +592,7 @@ public class WebViewObject : MonoBehaviour
             return false;
         return webView.Get<bool>("canGoBack");
 #endif
+        return false;
     }
 
     public bool CanGoForward()
@@ -610,6 +612,7 @@ public class WebViewObject : MonoBehaviour
             return false;
         return webView.Get<bool>("canGoForward");
 #endif
+        return false;
     }
 
     public void GoBack()
@@ -726,6 +729,7 @@ public class WebViewObject : MonoBehaviour
             return null;
         return webView.Call<string>("GetCustomHeaderValue", headerKey);
 #endif
+        return null;
     }
 
     public void RemoveCustomHeader(string headerKey)
