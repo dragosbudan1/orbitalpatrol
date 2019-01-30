@@ -97,7 +97,7 @@ MonoBehaviour:
   steeringModifier: 0.25
   speedModifier: 0.025
   projectileSpeedModifier: 5
-  bulletDelay: 0.2
+  bulletDelay: 0.1
   throttleMinAngle: -25
   throttleMaxAngle: 20
   RotationModifier: 0.1
